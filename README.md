@@ -7,7 +7,7 @@ This repository contains the Machine Learning part of the Heal&Go App
 ## Dataset 💾
 The dataset that we used when building this application is a dataset that we created ourselves by distributing questionnaires to the public and scraping from Google Reviews.
 - Deep Learning Model : [Dataset](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/dataset/questionnaire_dataset.csv)
-- Deep Reinforcement Learning Model :
+- Deep Reinforcement Learning Model :[Dataset](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/dataset/Dataset_Dest_Rating.xlsx)
 <br>
 
 ## Model 📈
