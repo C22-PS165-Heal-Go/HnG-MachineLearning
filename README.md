@@ -14,4 +14,7 @@ The dataset that we used when building this application is a dataset that we cre
 We use the Deep Learning model to create a tourist destination recommendation system using datasets derived from questionnaires. Meanwhile, for the Deep Reinforcement Learning model using a dataset from Google Review.
 - Deep Learning : [Code](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/src/dl_model.ipynb), [Model](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/tree/main/src/model)\
 📝 Note : **The highest accuracy of this model is still around 79%, so this model is still in the optimization stage.**
-- Deep Reinforcement : On Progress
+- Deep Reinforcement : [Model] (https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/Deep-RL-Actor-Critic/model.py)
+  * On-Progress Translating pytorch Deep RL training algorithm
+  * Maximizing row data in RL dataset, hopefully 3K data
+  * PMF Training form 2k dataset in RMSE 0.60
