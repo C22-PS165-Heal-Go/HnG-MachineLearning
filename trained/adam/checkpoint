@@ -1,0 +1,2 @@
+model_checkpoint_path: "pmf_150_adam"
+all_model_checkpoint_paths: "pmf_150_adam"
