@@ -1,88 +1,131 @@
 import tensorflow as tf
 import numpy as np
+
 from numpy.random import RandomState
 
-class Parameter(tf.keras.layers.Layer):
-    # Create PyTorch like paramater layer
-    def __init__(self, units, **kwargs):
-        super(Parameter, self).__init__(**kwargs)
-        self.w = self.add_weight(
-            shape=(units), initializer=None, trainable=True
-        )
-                        
-    def call(self, inputs):
-        # make sure the shapes are compatible
-        return inputs, self.w
+class PMF(tf.keras.Model):
+    def __init__(self, n_users, n_items, n_dim):
+        super(PMF, self).__init__()
+        ## initializing attributes from parameters        
+        self.w_u_i_init = tf.keras.initializers.RandomUniform(minval=-1., maxval=1., seed=1)
+        
+        ## initializing user embedding layer
+        ## the output shape should be n_users * n_dim
+        self.user_embedding = tf.keras.layers.Embedding(n_users,
+                                                        n_dim,
+                                                        embeddings_initializer='uniform',
+                                                        embeddings_regularizer=tf.keras.regularizers.L2(0.1))
+        ## initializing user embedding layer
+        ## the output shape should be n_items * n_dim
+        self.item_embedding = tf.keras.layers.Embedding(n_items,
+                                                        n_dim,
+                                                        embeddings_initializer='uniform',
+                                                        embeddings_regularizer=tf.keras.regularizers.L2(0.1))
+        
+        ## users embedding
+        self.ub = tf.keras.layers.Embedding(n_users, 
+                                            1, 
+                                            embeddings_initializer=self.w_u_i_init, 
+                                            embeddings_regularizer=tf.keras.regularizers.L2(0.1))
+        
+        ## items embedding
+        self.ib = tf.keras.layers.Embedding(n_items, 
+                                            1, 
+                                            embeddings_initializer=self.w_u_i_init, 
+                                            embeddings_regularizer=tf.keras.regularizers.L2(0.1))
+        
+    def call(self, user_index, item_index):
+        ## get the user and item embedding value
+        user_h1 = self.user_embedding(user_index)
+        item_h1 = self.item_embedding(item_index)
+        ## should be checked again
+        r_h = tf.math.reduce_sum(user_h1 * item_h1) + tf.squeeze(self.ub(user_index)) + tf.squeeze(self.ib(item_index))
+        return r_h
 
 class DRRAveStateRepresentation(tf.keras.Model):
-    
-    # Initialize method when model is instantiated
     def __init__(self, n_items=5, item_features=100, user_features=100):
-        # Inherit from the upper
         super(DRRAveStateRepresentation, self).__init__()
-        self.n_items = n_items
+        ## initialize random_state to 1
         self.random_state = RandomState(1)
+        
+        ## hold all the parameters variable
+        self.n_items = n_items
         self.item_features = item_features
         self.user_features = user_features
-
-        self.attention_weights = Parameter(tf.convert_to_tensor(0.1 * self.random_state.rand(self.n_items)))
-
-        self.concat = tf.keras.layers.Concatenate()
-        self.flatten = tf.keras.layers.Flatten()
+        
+        ## add to the model parameter
+        ## self.attention_weights shape (n_items x 1)
+        ## later this need to be reshaped
+        self.attention_weights = tf.Variable(initial_value=(0.1 * self.random_state.rand(self.n_items, 1)),
+                                             trainable=True,
+                                             dtype='float32')
         
     def call(self, user, items):
-        """
-        DRR-AVE State Representation
-        :param items: (torch tensor) shape = (n_items x item_features),
-                Matrix of items in history buffer
-
-        :param user: (torch tensor) shape = (1 x user_features),
-                User embedding
-
-        :return: output: (torch tensor) shape = (3 * item_features)
-        """
-        right = tf.transpose(items) @ self.attention_weights
+        '''
+        items  : type(tensor) shape = (n_items x item_features)
+        user   : type(tensor) shape = (user_features, )
+        output : type(tensor) shape = (3 * item_features)
+        '''
+        ## right will result in numpy array
+        ## because there is an issue with tensor matrix multiplications
+        right = tf.reshape(tf.transpose(items) @ self.attention_weights, (self.item_features,))
         middle = user * right
-        output = self.concat([user, middle, right], axis=0)
-
-        return self.flatten(output)
+        output = tf.concat([user, middle, right], 0)
+        return tf.convert_to_tensor(output)
 
 class Actor(tf.keras.Model):
+    '''
+    Actor network accounts for generatign action space based on
+    the state space
+    in_features : the size of state representation got from DRRAve
+    out_features : the size of action space
+    '''
     def __init__(self, in_features=100, out_features=18):
         super(Actor, self).__init__()
-        self.inputs = tf.keras.layers.InputLayer(name='input_layer', input_shape=(in_features,))
-        self.fc = tf.keras.Sequential([
-            tf.keras.layers.Dense(in_features, activation='relu'),
-            tf.keras.layers.Dense(in_features, activation='relu'),
-            tf.keras.layers.Dense(out_features, activation='tanh')
-        ])
+        self.in_features = in_features
+        self.out_features = out_features
+        
+        self.linear_1 = tf.keras.layers.Dense(in_features, activation='relu')
+        self.linear_2 = tf.keras.layers.Dense(in_features, activation='relu')
+        self.linear_3 = tf.keras.layers.Dense(out_features, activation='tanh')
         
     def call(self, state):
-        output = self.inputs(state)
-        return self.fc(output)
+        inputs = tf.reshape(state, (1, self.in_features))
+        output = self.linear_1(inputs)
+        output = self.linear_2(output)
+        output = self.linear_3(output)
+        return output
 
 class Critic(tf.keras.Model):
+    '''
+    Critic networks are Deep-Q-Networks
+    acton_size : is the size of action space from actor networks
+    in_features : is the size of state representation got from DRR-Ave
+    out_features : Q-Value
+    '''
     def __init__(self, action_size=20, in_features=128, out_features=18):
         super(Critic, self).__init__()
         self.in_features = in_features
         self.out_features = out_features
-        self.action_size = action_size
-
         self.combo_features = in_features + action_size
-
-        self.inputs = tf.keras.layers.InputLayer(input_shape=(self.in_features, 3*in_features))
-        self.fc1 = tf.keras.layers.Dense(self.in_features, activation = 'relu')
-        self.concat = tf.keras.layers.Concatenate()
-        self.fc2 = tf.keras.layers.Dense(self.combo_features, activation = 'relu')
-        self.fc3 = tf.keras.layers.Dense(self.combo_features, activation = 'relu')
-        self.out = tf.keras.layers.Dense(self.out_features, activation = 'linear')
-
-class PMF(tf.keras.Model):
-    def __init__(self, n_users, n_items, n_factors=20):
-        super(PMF, self).__init__()
-        self.n_users = n_users
-        self.n_items = n_items
-        self.n_factors = n_factors
-        self.random_state = RandomState(1)
-
-        self.user_embedding = tf.keras.layers.Embedding(n_users, n_factors)
+        self.action_size = action_size
+        ## check shape of the input
+        self.linear_1 = tf.keras.layers.Dense(self.in_features, 
+                                              activation='relu')
+        
+        self.linear_2 = tf.keras.layers.Dense(self.combo_features, 
+                                              activation='relu')
+        
+        self.linear_3 = tf.keras.layers.Dense(self.combo_features, 
+                                              activation='relu')
+        
+        self.linear_4 = tf.keras.layers.Dense(out_features, 
+                                              activation=None)
+        
+    def call(self, state, action):
+        inputs = tf.reshape(state, (1, self.in_features))
+        outputs = self.linear_1(inputs)
+        outputs = self.linear_2(tf.concat([action, outputs], 1))
+        outputs = self.linear_3(outputs)
+        outputs = self.linear_4(outputs)
+        return outputs
