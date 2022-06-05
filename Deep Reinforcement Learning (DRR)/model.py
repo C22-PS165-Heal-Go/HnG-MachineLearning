@@ -3,6 +3,7 @@ import numpy as np
 
 from numpy.random import RandomState
 
+## CHECKED AND SAFE
 class PMF(tf.keras.Model):
     def __init__(self, n_users, n_items, n_dim):
         super(PMF, self).__init__()
@@ -42,6 +43,7 @@ class PMF(tf.keras.Model):
         r_h = tf.math.reduce_sum(user_h1 * item_h1) + tf.squeeze(self.ub(user_index)) + tf.squeeze(self.ib(item_index))
         return r_h
 
+## CHECKED SAVE
 class DRRAveStateRepresentation(tf.keras.Model):
     def __init__(self, n_items=5, item_features=100, user_features=100):
         super(DRRAveStateRepresentation, self).__init__()
@@ -56,7 +58,7 @@ class DRRAveStateRepresentation(tf.keras.Model):
         ## add to the model parameter
         ## self.attention_weights shape (n_items x 1)
         ## later this need to be reshaped
-        self.attention_weights = tf.Variable(initial_value=(0.1 * self.random_state.rand(self.n_items, 1)),
+        self.attention_weights = tf.Variable(initial_value=(0.1 * tf.random.uniform((n_items, 1), minval=0., maxval=1.)),
                                              trainable=True,
                                              dtype='float32')
         
@@ -68,10 +70,12 @@ class DRRAveStateRepresentation(tf.keras.Model):
         '''
         ## right will result in numpy array
         ## because there is an issue with tensor matrix multiplications
-        right = tf.reshape(tf.transpose(items) @ self.attention_weights, (self.item_features,))
+        right = tf.transpose(items) @ self.attention_weights
+        ## flatten the user
+        right = tf.reshape(right, (right.shape[0],))
         middle = user * right
         output = tf.concat([user, middle, right], 0)
-        return tf.convert_to_tensor(output)
+        return output
 
 class Actor(tf.keras.Model):
     '''
@@ -85,16 +89,29 @@ class Actor(tf.keras.Model):
         self.in_features = in_features
         self.out_features = out_features
         
-        self.linear_1 = tf.keras.layers.Dense(in_features, activation='relu')
-        self.linear_2 = tf.keras.layers.Dense(in_features, activation='relu')
-        self.linear_3 = tf.keras.layers.Dense(out_features, activation='tanh')
+        self.linear_1 = tf.keras.layers.Dense(units=in_features,
+                                              activation='relu',
+                                              kernel_initializer=tf.keras.initializers.Orthogonal(seed=42),
+                                              bias_initializer='zeros',
+                                              kernel_regularizer=tf.keras.regularizers.L2(0.1))
+        
+        self.linear_2 = tf.keras.layers.Dense(units=in_features,
+                                              activation='relu',
+                                              kernel_initializer=tf.keras.initializers.Orthogonal(seed=42),
+                                              bias_initializer='zeros',
+                                              kernel_regularizer=tf.keras.regularizers.L2(0.1))
+        
+        self.linear_3 = tf.keras.layers.Dense(units=out_features,
+                                              activation='tanh',
+                                              kernel_initializer=tf.keras.initializers.Orthogonal(seed=42),
+                                              bias_initializer='zeros',
+                                              kernel_regularizer=tf.keras.regularizers.L2(0.1))
         
     def call(self, state):
-        inputs = tf.reshape(state, (1, self.in_features))
-        output = self.linear_1(inputs)
+        output = self.linear_1(state)
         output = self.linear_2(output)
         output = self.linear_3(output)
-        return output
+        return tf.convert_to_tensor(output)
 
 class Critic(tf.keras.Model):
     '''
@@ -111,21 +128,32 @@ class Critic(tf.keras.Model):
         self.action_size = action_size
         ## check shape of the input
         self.linear_1 = tf.keras.layers.Dense(self.in_features, 
-                                              activation='relu')
+                                              activation='relu',
+                                              kernel_initializer=tf.keras.initializers.Orthogonal(seed=42),
+                                              bias_initializer='zeros',
+                                              kernel_regularizer=tf.keras.regularizers.L2(0.1))
         
         self.linear_2 = tf.keras.layers.Dense(self.combo_features, 
-                                              activation='relu')
+                                              activation='relu',
+                                              kernel_initializer=tf.keras.initializers.Orthogonal(seed=42),
+                                              bias_initializer='zeros',
+                                              kernel_regularizer=tf.keras.regularizers.L2(0.1))
         
         self.linear_3 = tf.keras.layers.Dense(self.combo_features, 
-                                              activation='relu')
+                                              activation='relu', 
+                                              kernel_initializer=tf.keras.initializers.Orthogonal(seed=42),
+                                              bias_initializer='zeros',
+                                              kernel_regularizer=tf.keras.regularizers.L2(0.1))
         
         self.linear_4 = tf.keras.layers.Dense(out_features, 
-                                              activation=None)
+                                              activation=None,
+                                              kernel_initializer=tf.keras.initializers.Orthogonal(seed=42),
+                                              bias_initializer='zeros',
+                                              kernel_regularizer=tf.keras.regularizers.L2(0.1))
         
     def call(self, state, action):
-        inputs = tf.reshape(state, (1, self.in_features))
-        outputs = self.linear_1(inputs)
+        outputs = self.linear_1(state)
         outputs = self.linear_2(tf.concat([action, outputs], 1))
         outputs = self.linear_3(outputs)
         outputs = self.linear_4(outputs)
-        return outputs
+        return tf.convert_to_tensor(outputs)
