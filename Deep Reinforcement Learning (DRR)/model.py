@@ -40,7 +40,9 @@ class PMF(tf.keras.Model):
         user_h1 = self.user_embedding(user_index)
         item_h1 = self.item_embedding(item_index)
         ## should be checked again
-        r_h = tf.math.reduce_sum(user_h1 * item_h1) + tf.squeeze(self.ub(user_index)) + tf.squeeze(self.ib(item_index))
+        r_h = tf.math.reduce_sum(user_h1 * item_h1, axis=1 if len(user_h1.shape) > 1 else 0)
+        r_h += tf.squeeze(self.ub(user_index))
+        r_h += tf.squeeze(self.ib(item_index))
         return r_h
 
 ## CHECKED SAVE
@@ -75,6 +77,8 @@ class DRRAveStateRepresentation(tf.keras.Model):
         right = tf.reshape(right, (right.shape[0],))
         middle = user * right
         output = tf.concat([user, middle, right], 0)
+
+        output = tf.reshape(output, [1, output.shape[0]])
         return output
 
 class Actor(tf.keras.Model):
