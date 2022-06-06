@@ -45,6 +45,10 @@ class PMF(tf.keras.Model):
         r_h += tf.squeeze(self.ib(item_index))
         return r_h
 
+    def build_model(self):
+        self.call(1, 1)
+        return 'Weight Intialized'
+
 ## CHECKED SAVE
 class DRRAveStateRepresentation(tf.keras.Model):
     def __init__(self, n_items=5, item_features=100, user_features=100):
@@ -77,9 +81,14 @@ class DRRAveStateRepresentation(tf.keras.Model):
         right = tf.reshape(right, (right.shape[0],))
         middle = user * right
         output = tf.concat([user, middle, right], 0)
-
         output = tf.reshape(output, [1, output.shape[0]])
         return output
+    
+    def build_model(self):
+        flow_item = tf.ones([self.n_items, self.item_features], tf.float32)
+        flow_user = tf.ones([self.user_features,], tf.float32)
+        self.call(flow_user, flow_item)
+        return "Weight Initialized"
 
 class Actor(tf.keras.Model):
     '''
@@ -116,6 +125,11 @@ class Actor(tf.keras.Model):
         output = self.linear_2(output)
         output = self.linear_3(output)
         return tf.convert_to_tensor(output)
+
+    def build_model(self):
+        flow_state = tf.ones([1, self.in_features], tf.float32)
+        self.call(flow_state)
+        return "Weight Initialized"
 
 class Critic(tf.keras.Model):
     '''
@@ -161,3 +175,9 @@ class Critic(tf.keras.Model):
         outputs = self.linear_3(outputs)
         outputs = self.linear_4(outputs)
         return tf.convert_to_tensor(outputs)
+    
+    def build_model(self):
+        flow_state = tf.ones([1, self.in_features], tf.float32)
+        flow_action = tf.ones([1, self.action_size], tf.float32)
+        self.call(flow_state, flow_action)
+        return "Weight Initialized"

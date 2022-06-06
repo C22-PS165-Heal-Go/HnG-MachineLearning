@@ -1,2 +1,2 @@
-model_checkpoint_path: "state_rep_weights"
-all_model_checkpoint_paths: "state_rep_weights"
+model_checkpoint_path: "state_rep_150"
+all_model_checkpoint_paths: "state_rep_150"
