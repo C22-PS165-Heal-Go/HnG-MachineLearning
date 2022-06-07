@@ -24,5 +24,3 @@ We use the Deep Learning model to create a tourist destination recommendation sy
 - Precision@10: 0.7368
 - Precision@15: 0.7735
 - Precision@20: 0.8122
-
-**Re-implementing in TensorFlow Framework for deploying, New Training Algorithm on-progress**
