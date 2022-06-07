@@ -7,7 +7,7 @@ from utils.history_buffer import HistoryBuffer
 
 ## ngebuka data
 users = pickle.load(open('dataset_RL/user_id_to_num.pkl', 'rb'))
-items = pickle.load(open('dataset_RL/item_id_to_num.pkl', 'rb'))
+items = pickle.load(open('dataset_RL/item_lookup.pkl', 'rb'))
 data = np.load('dataset_RL/data_RL_25000.npy')
 data[:, 2] = 0.5 * (data[:, 2] - 3)
 
@@ -84,7 +84,7 @@ while t < episode_length:
     rec_item_idx = tf.argmax(ranking_scores).numpy()
     rec_item_emb = candidate_items[rec_item_idx]
 
-    print(rec_item_idx)
+    print(items.get(rec_item_idx))
     print("Do you like it?")
     user_input = input("[Y/n] :")
 
