@@ -6,9 +6,9 @@ from model import Actor, Critic, DRRAveStateRepresentation, PMF
 from utils.history_buffer import HistoryBuffer
 
 ## ngebuka data
-users = pickle.load(open('Dataset/user_id_to_num.pkl', 'rb'))
-items = pickle.load(open('Dataset/item_id_to_num.pkl', 'rb'))
-data = np.load('Dataset/data_RL_8000.npy')
+users = pickle.load(open('dataset_RL/user_id_to_num.pkl', 'rb'))
+items = pickle.load(open('dataset_RL/item_id_to_num.pkl', 'rb'))
+data = np.load('dataset_RL/data_RL_25000.npy')
 data[:, 2] = 0.5 * (data[:, 2] - 3)
 
 ## deklarasi model
