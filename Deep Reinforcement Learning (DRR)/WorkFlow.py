@@ -34,10 +34,8 @@ candidate_items = tf.convert_to_tensor(reward_function.item_embedding.get_weight
 
 ## Declare Deque dari utils
 history_buffer = HistoryBuffer(5)
-
 ## user buat sementara diacak dalam pemilihan embeddingnya
 user_idx = np.random.randint(0, 549)
-
 ## ambil embedding user/sifat user
 user_emb = user_embeddings[user_idx]
 
@@ -59,50 +57,77 @@ ignored_items = []
 t = 0
 episode_length = 5
 
-while t < episode_length:
+## item terakhir yang dilike/ga dilike
+## yang like positif yang ga like negatif
+item_yg_udh_dinilai = [[0, 0.8], [1, 0.8], [2, -0.8], [3, -0.8], [4, 0.8]]
 
-    # state awal" pertama kali
-    if t == 0:
+## variabel buat nampung item hasil rekomendasi
+item_for_recommendation = []
+
+for item in item_yg_udh_dinilai:
+
+    if item[1] > 0:
+        ## ambil embeddingnya terus push ke buffer history
+        emb = candidate_items[item[0]]
+        history_buffer.push(tf.identity(tf.stop_gradient(emb)))
+
+        ## statenya hitung
         state = state_rep_net(user_emb, tf.stack(history_buffer.to_list()))
 
-    ## perhitungan actor terhadap state sekarang
-    action = actor_net(tf.stop_gradient(state))
+        ## actionnya hitung
+        action = actor_net(tf.stop_gradient(state))
 
-    # Perhitungan skornya
-    ranking_scores = candidate_items @ tf.transpose(action)
-    ranking_scores = tf.reshape(ranking_scores, (ranking_scores.shape[0],)).numpy()
+        # Perhitungan skor ranking item terbaik dan di-flatten
+        ranking_scores = candidate_items @ tf.transpose(action)
+        ranking_scores = tf.reshape(ranking_scores, (ranking_scores.shape[0],)).numpy()
 
-    if len(ignored_items) > 0:
-        rec_items = tf.stack(ignored_items).numpy()
+        ## ini jaga" biar ga direkomen dua kali
+        if len(ignored_items) > 0:
+            rec_items = tf.stack(ignored_items).numpy()
+        else:
+            rec_items = []
+
+        ## nanti di list rankingnya dinegatifin biar di akhir posisinya
+        ranking_scores[rec_items] = -float("inf")
+
+        # ambil rekomen itemnya
+        rec_item_idx = tf.argmax(ranking_scores).numpy()
+        rec_item_emb = candidate_items[rec_item_idx]
+
+        item_for_recommendation.append(rec_item_idx)
+
+        # Remove new item from future recommendations
+        ignored_items.append(tf.convert_to_tensor(rec_item_idx))
+
     else:
-        rec_items = []
-    
-    ## biar ga ngerekomendasiin item yang sama 2x
-    ranking_scores[rec_items] = -float("inf")
-
-    # ambil rekomen itemnya
-    rec_item_idx = tf.argmax(ranking_scores).numpy()
-    rec_item_emb = candidate_items[rec_item_idx]
-
-    print(items.get(rec_item_idx))
-    print("Do you like it?")
-    user_input = input("[Y/n] :")
-
-    if user_input.lower() == 'y':
-        reward = 0.8
-    else:
-        reward = -0.8
-
-    ## kalo rewardnya bagus buat state baru
-    ## kalo engga masih pake state sekarang
-    if reward > 0:
-        ## item yang dilike tadi buat keputusan selanjutnya
-        history_buffer.push(rec_item_emb)
+        ## statenya dihitung
+        ## karena itemnya gadilike jadi keadaan state masih sama
         state = state_rep_net(user_emb, tf.stack(history_buffer.to_list()))
-    else:
-        state = tf.stop_gradient(state)
 
-    # Remove new item from future recommendations
-    ignored_items.append(tf.convert_to_tensor(rec_item_idx))
+        ## actionnya hitung
+        action = actor_net(tf.stop_gradient(state))
 
-    t+=1
+        # Perhitungan skor ranking item terbaik dan di-flatten
+        ranking_scores = candidate_items @ tf.transpose(action)
+        ranking_scores = tf.reshape(ranking_scores, (ranking_scores.shape[0],)).numpy()
+
+        ## ini jaga" biar ga direkomen dua kali
+        if len(ignored_items) > 0:
+            rec_items = tf.stack(ignored_items).numpy()
+        else:
+            rec_items = []
+
+        ## nanti di list rankingnya dinegatifin biar di akhir posisinya
+        ranking_scores[rec_items] = -float("inf")
+
+        # ambil rekomen itemnya
+        rec_item_idx = tf.argmax(ranking_scores).numpy()
+        rec_item_emb = candidate_items[rec_item_idx]
+
+        item_for_recommendation.append(rec_item_idx)
+
+        # Remove new item from future recommendations
+        ignored_items.append(tf.convert_to_tensor(rec_item_idx))
+
+for indeks in item_for_recommendation:
+    print(items.get(indeks))
