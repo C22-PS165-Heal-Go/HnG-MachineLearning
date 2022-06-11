@@ -9,11 +9,11 @@ Questions, suggestions, or correctness can be posted as issues.
 I'm using `Tensorflow 2.7.0` in `Python 3.9`.
 
 # Contents
-[***Concepts***](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning#)
+[***Concepts***](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/tree/main/Deep%20Reinforcement%20Learning%20(DRR)#concepts)
 
-[***Training***](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning#)
+[***Training***](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/tree/main/Deep%20Reinforcement%20Learning%20(DRR)#training)
 
-[***Inference***](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning#)
+[***Inference***](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/tree/main/Deep%20Reinforcement%20Learning%20(DRR)#inference)
 
 # Concepts
 
