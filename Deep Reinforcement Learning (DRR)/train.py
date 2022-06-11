@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 
 from utils.prioritized_replay_buffer import NaivePrioritizedReplayMemory, Transition
 from utils.history_buffer import HistoryBuffer
-from utils.general import export_plot
 
 class DRRTrainer(object):
     def __init__(self,
@@ -176,7 +175,6 @@ class DRRTrainer(object):
             action = None
             reward = None
             next_state = None
-            print("Start User: {}".format(idx))
 
             while t < self.config.episode_length:
                 ## observing the current state
@@ -236,7 +234,6 @@ class DRRTrainer(object):
                     next_state = tf.stop_gradient(state)
                 
                 ignored_items.append(rec_item_idx)
-                print(rec_item_idx)
                 replay_buffer.push(state, action, next_state, reward)
                 
                 ## Inference calling stops here
@@ -281,9 +278,9 @@ class DRRTrainer(object):
         
         print("Training Finished")
         
-        # self.actor_net.save_weights('trained/actor_weights/actor_150')
-        # self.critic_net.save_weights('trained/critic_weights/critic_150')
-        # self.state_rep_net.save_weights('trained/state_rep_weights/state_rep_150')
+        # self.actor_net.save_weights('trained/actor_weights/oversampling/actor_150')
+        # self.critic_net.save_weights('trained/critic_weights/oversampling/critic_150')
+        # self.state_rep_net.save_weights('trained/state_rep_weights/oversampling/state_rep_150')
         # print("Model Saved")
         
         return actor_losses, critic_losses, epi_avg_rewards
@@ -346,13 +343,9 @@ class DRRTrainer(object):
         return critic_loss.numpy(), actor_loss.numpy(), critic_param_norm
          
     def soft_update(self, local_model, target_model, tau):
-        """Soft update model parameters.
+        """
+        Soft update model parameters.
         θ_target = τ*θ_local + (1 - τ)*θ_target
-        Params
-        ======
-            local_model: model which the weights will be copied from
-            target_model: model which weights will be copied to
-            tau (float): interpolation parameter
         """
         for t_layer, layer in zip(target_model.layers, local_model.layers):
             ## initiate list
@@ -369,22 +362,6 @@ class DRRTrainer(object):
                                      reward_batch,
                                      next_state_batch,
                                      weights):
-        '''
-        :param state_batch: (tensor) shape = (batch_size x state_dims),
-                The batched tensor of states collected during
-                training (i.e. s)
-        :param action_batch: (LongTensor) shape = (batch_size,)
-                The actions that you actually took at each step (i.e. a)
-        :param reward_batch: (tensor) shape = (batch_size,)
-                The rewards that you actually got at each step (i.e. r)
-        :param next_state_batch: (tensor) shape = (batch_size x state_dims),
-                The batched tensor of next states collected during
-                training (i.e. s')
-        :param weights: (tensor) shape = (batch_size,)
-                Weights for each batch item w.r.t. prioritized experience replay buffer
-        :return: loss: (torch tensor) shape = (1),
-                 new_priorities: (numpy array) shape = (batch_size,)
-        '''
         ## create batches
         ## forward pass through target actor network
         next_action = self.target_actor_net(next_state_batch, training=False)
@@ -410,11 +387,11 @@ class DRRTrainer(object):
         return loss, new_priorities
     
     def load_parameters(self):
-        self.actor_net.load_weights('trained/actor_weights/actor_150')
-        self.target_actor_net.load_weights('trained/actor_weights/actor_150')
-        self.critic_net.load_weights('trained/critic_weights/critic_150')
-        self.target_critic_net.load_weights('trained/critic_weights/critic_150')
-        self.state_rep_net.load_weights('trained/state_rep_weights/state_rep_150')
+        self.actor_net.load_weights('trained/actor_weights/h5/actor_75.h5')
+        self.target_actor_net.load_weights('trained/actor_weights/h5/actor_75.h5')
+        self.critic_net.load_weights('trained/critic_weights/h5/critic_75.h5')
+        self.target_critic_net.load_weights('trained/critic_weights/h5/critic_75.h5')
+        self.state_rep_net.load_weights('trained/state_rep_weights/h5/state_rep_75.h5')
     
     def offline_evaluate(self, T):
         ## loading the parameters
@@ -434,13 +411,12 @@ class DRRTrainer(object):
         
         for step, e in enumerate(user_idxs):
             
-            print("User Index: {}, step: {}".format(e, step))
             if len(e_arr) > self.config.max_epochs_offline:
                 break
             
             ## extracting positive user reviews
             ## e variable is an element right now
-            user_reviews = self.train_data[self.train_data[:, self.u] == e]
+            user_reviews = self.test_data[self.test_data[:, self.u] == e]
             pos_user_reviews = user_reviews[user_reviews[:, self.r] > 0]
             
             ## check if the user ratings doesn't have enough positive review
@@ -521,7 +497,6 @@ class DRRTrainer(object):
                     next_state = tf.stop_gradient(state)
                 
                 ignored_items.append(user_reviews[rec_item_idx])
-                print(rec_item_idx)
                 ## housekeeping
                 t += 1
                 timesteps += 1

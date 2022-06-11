@@ -49,7 +49,19 @@ class PMF(tf.keras.Model):
         self.call(1, 1)
         return 'Weight Intialized'
 
-## CHECKED SAVE
+class AttentionLayer(tf.keras.layers.Layer):
+    def __init__(self, units):
+        super(AttentionLayer, self).__init__()
+        self.units = units
+        self.attention_kernel = self.add_weight(shape=(units,1),
+                                                initializer='random_uniform',
+                                                trainable=True)        
+    
+    def call(self, inputs):
+        return tf.reshape(tf.transpose(inputs) @ self.attention_kernel, (inputs.shape[1],))
+
+## class making done
+## safe input and output
 class DRRAveStateRepresentation(tf.keras.Model):
     def __init__(self, n_items=5, item_features=100, user_features=100):
         super(DRRAveStateRepresentation, self).__init__()
@@ -64,9 +76,8 @@ class DRRAveStateRepresentation(tf.keras.Model):
         ## add to the model parameter
         ## self.attention_weights shape (n_items x 1)
         ## later this need to be reshaped
-        self.attention_weights = tf.Variable(initial_value=(0.1 * tf.random.uniform((n_items, 1), minval=0., maxval=1.)),
-                                             trainable=True,
-                                             dtype='float32')
+        self.attention_layer = AttentionLayer(5)
+        self.ave_pool = tf.keras.layers.AveragePooling1D(pool_size=2, )
         
     def call(self, user, items):
         '''
@@ -76,19 +87,17 @@ class DRRAveStateRepresentation(tf.keras.Model):
         '''
         ## right will result in numpy array
         ## because there is an issue with tensor matrix multiplications
-        right = tf.transpose(items) @ self.attention_weights
-        ## flatten the user
-        right = tf.reshape(right, (right.shape[0],))
+        right = self.attention_layer(items)
         middle = user * right
         output = tf.concat([user, middle, right], 0)
         output = tf.reshape(output, [1, output.shape[0]])
         return output
     
     def build_model(self):
-        flow_item = tf.ones([self.n_items, self.item_features], tf.float32)
-        flow_user = tf.ones([self.user_features,], tf.float32)
+        flow_user = tf.ones([100, ], tf.float32)
+        flow_item = tf.ones([5, 100], tf.float32)
         self.call(flow_user, flow_item)
-        return "Weight Initialized"
+        print("Weight Initiated")
 
 class Actor(tf.keras.Model):
     '''
