@@ -1,0 +1,1 @@
+Average Precision@5 (Eval): 0.7287924151696605
