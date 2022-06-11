@@ -20,7 +20,7 @@ We use the Deep Learning model to create a tourist destination recommendation sy
 - [Demo](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/Deep%20Reinforcement%20Learning%20(DRR)/WorkFlow.py)
 
 📝 Note : **The DRR offline evaluation**
-- Precision@5: 0.7287
-- Precision@10: 0.7368
-- Precision@15: 0.7735
-- Precision@20: 0.8122
+- Precision@5: 0.6962
+- Precision@10: 0.7225
+- Precision@15: 0.7835
+- Precision@20: 0.8622
