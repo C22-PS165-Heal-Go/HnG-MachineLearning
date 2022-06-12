@@ -57,3 +57,13 @@ We suspect that this is **Variance Error**. Our dataset is indeed imbalanced, ma
 We use `RandomOverSample()` to oversampling the data. This oversampling makes the amount of data that was initially only around 1000 data, is sampled to 4400 data.
 
 This method is quite successful because it can reduce the variance although the accuracy is still not very good.
+
+#### Spliting Data
+With a total of about 4400 data. The data is divided into 3 parts, namely **train data**, **validation data**, and **test data** with each ratio of 70:20:10. Train data obtained is 3099 data.
+
+We also divide the data into **x** and **y**. Class or label is entered into the variable **y**, while for the other columns it is entered into the variable **x**.
+
+#### Normalization Data
+After training, the accuracy obtained after oversampling is quite good than before, but we think it can still be improved.
+
+We are trying to normalize the data by using `MinMaxScaler()` on the data **x**. `MinMaxScaler()` makes the value of the data in the range 0-1. This method is quite successful in making the accuracy of the model increase even if only slightly.
