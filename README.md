@@ -30,6 +30,11 @@ We use the Deep Learning model to create a tourist destination recommendation sy
   - Precision@10: 0.7225
   - Precision@15: 0.7835
   - Precision@20: 0.8622
+
+---
+![](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/img/drr_eval.png)
+---
+
 <br>
 
 ## Reference 📚
