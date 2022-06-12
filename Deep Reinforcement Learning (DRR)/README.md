@@ -1,4 +1,4 @@
-This is a [TensorFlow](https://www.tensorflow.org/) implementation to DRR (Deep Reinforcement Learning), that I wrote from scratch. It took me solid 10 days with full 10-hours each day to reimplement the code from PyTorch to Tensorflow Frameworks.
+This is a [TensorFlow](https://www.tensorflow.org/) implementation to DRR (Deep Reinforcement Learning), that I wrote from scratch. It took me solid 10 days to reimplement the code from PyTorch to Tensorflow Frameworks.
 
 This project is built by referring to these papers [[1]](https://arxiv.org/pdf/1810.12027.pdf) and [[2]](https://aclanthology.org/P19-1064.pdf)
 
@@ -51,10 +51,16 @@ Basically the recommender user-item interaction can be described such as:
 * Lastly, the model will update the **state** according to **the rewards** given.
 
 # Overview
-In this section, I will present the models that is used in DRR frameworks
+In this section, I will present the models that is used in DRR frameworks. For all the models, I create a `model.py` file,([Here](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/Deep%20Reinforcement%20Learning%20(DRR)/model.py)) just to make
+things more manageable. Before I place all the models into one file, I create each model in jupyter notebook first.
+
+These are the list to the jupyter notebook model
+* [PMF Module](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/Deep%20Reinforcement%20Learning%20(DRR)/PMF_TensorFlow.ipynb)
+* [State Representation Module](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/Deep%20Reinforcement%20Learning%20(DRR)/DRR_Ave_Models_Tensorflow.ipynb)
+* [Actor and Critic Module](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/Deep%20Reinforcement%20Learning%20(DRR)/Actor-Critic_Tensorflow.ipynb)
 
 ### Probabilistic Matrix Factorization(PMF) Module
-Probabilistic Matrix Factorization is a module that is used to model user and items interactions, based on this [[3]](https://proceedings.neurips.cc/paper/2007/file/d7322ed717dedf1eb4e6e52a37ea7bcd-Paper.pdf). This model then will be used as environment simulator meaning that in this frameworks it will be used to predict an item that has not been yet rated by the coresponding user.
+Probabilistic Matrix Factorization is a module that is used for environment simulator and reward functions, based on this [[3]](https://proceedings.neurips.cc/paper/2007/file/d7322ed717dedf1eb4e6e52a37ea7bcd-Paper.pdf). This model then will be used as environment simulator meaning that in this frameworks it will be used to predict an item that has not been yet rated by the coresponding user.
 
 This model is composed of four embedding layers, two of them has 100-dimension, and the other two has 1-dimension each. This number is used based on the result in paper [[1]](https://arxiv.org/pdf/1810.12027.pdf).
 
@@ -66,10 +72,47 @@ and if you want to dig deeper on how to create custom loop using TensorFlow fram
 For the dataset, you can use Movielens(100K) or Movielens(1M). Or you can choose the dataset that is already available in this repo. If you want to create your own dataset, you need to make sure the structure of the dataset is following the open publicly dataset such as movielens, jester, etc.
 
 ### State Representation Module
+State representation module, as the name suggest will work as the state representation that model the interactions between the users and the items.
+
+In my case, the state representation module composed of one attention layer. The call method in the state representation modul consist of some
+mathematic operation, those are:
+* First, matrix multiplication between the weighted matrix with input item embedding matrix
+* Second, element wise multiplication between items embedding matrix and users matrix
+* Third, the results from first and second operation are then concatenated with users matrix
+
+The output of the state representation module is a matrix with the shape size of (3 * feature size). In this case, I define the feature size
+based on the PMF module before, that is 100-dimension.
+
+For the model creation, I made in [DRR_Ave_Models_Tensorflow](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/Deep%20Reinforcement%20Learning%20(DRR)/DRR_Ave_Models_Tensorflow.ipynb)
+, there are two version of it, you can experiment with your own take.
 
 ### Actor Module
+Actor module, is also called policy module, this module will calculate an actions based on the state. The action is a weighted vector
+which will be used for ranking the possible items/destinations in this case to the users.
+
+Actor module consists of three dense layers, those are: 
+* the first and second layers have input shape of (1, state size) with **ReLu** activation
+* the third layer has the output of a size of the features and the result is activated with **tanh** activation,
+
+Finally actor module will output the features of size (features size,) which in this case is defined at 100. This output then will
+be computed with items embeddings and resulting with top ranks item that will be recommended to the user.
+
+Actor module first created is in [Actor_Critic_Tensorflow](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/Deep%20Reinforcement%20Learning%20(DRR)/Actor-Critic_Tensorflow.ipynb).
+There is some extra operation such as reshape, just be careful with the shape size, usually the bug comes from the shape size or data type.
+For all the models you can check [here](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/Deep%20Reinforcement%20Learning%20(DRR)/model.py)
 
 ### Critic Module
+Critic module is a Deep Q Network. This network will output a Q-value which will reflect the output from actor network.
+Basically the critic module is used to train the actor network by updating the actor network based on deterministic policy gradient.
+The inputs to this module are the state and the action from actor module.
+
+Critic module consists of four dense layers. Those are:
+* The first layer will have the unit size of the input features, that is the state,
+* The second and third layers will have the unit size of the combination of first layer output and action size
+* The fourth layer will have a unit size of one, that is the result or q-value.
+
+Actor module first created is in [Actor_Critic_Tensorflow](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/Deep%20Reinforcement%20Learning%20(DRR)/Actor-Critic_Tensorflow.ipynb).
+For all the models you can check [here](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/Deep%20Reinforcement%20Learning%20(DRR)/model.py)
 
 # Training
 
