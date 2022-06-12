@@ -114,9 +114,9 @@ based on the PMF module before, that is `100-dimension`.
 For the model creation, I made in [DRR_Ave_Models_Tensorflow](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/Deep%20Reinforcement%20Learning%20(DRR)/DRR_Ave_Models_Tensorflow.ipynb)
 , there are two version of it, you can experiment with your own take.
 
----
-![](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/Deep%20Reinforcement%20Learning%20(DRR)/assets/Diagram%20State%20Representation.png)
----
+<p align="center">
+  <img src="https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/Deep%20Reinforcement%20Learning%20(DRR)/assets/Diagram%20State%20Representation.png" alt="DRR Precisions">
+</p>
 
 ### Actor Module
 Actor module, is also called policy module, this module will calculate an actions based on the state. The action is a weighted vector
@@ -133,9 +133,9 @@ Actor module first created is in [Actor_Critic_Tensorflow](https://github.com/C2
 There is some extra operation such as reshape, just be careful with the shape size, usually the bug comes from the shape size or data type.
 For all the models you can check [here](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/Deep%20Reinforcement%20Learning%20(DRR)/model.py)
 
----
-![](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/Deep%20Reinforcement%20Learning%20(DRR)/assets/DIagram%20Actor%20Network.png)
----
+<p align="center">
+  <img src="https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/Deep%20Reinforcement%20Learning%20(DRR)/assets/DIagram%20Actor%20Network.png" alt="DRR Precisions">
+</p>
 
 ### Critic Module
 Critic module is a Deep Q Network (paper [[4]](https://www.nature.com/articles/nature14236?wm=book_wap_0005) and [tutorial](https://pytorch.org/tutorials/intermediate/reinforcement_q_learning.html)). This network will output a Q-value which will reflect the output from actor network.
@@ -150,9 +150,10 @@ Critic module consists of four dense layers. Those are:
 Critic module first created is in [Actor_Critic_Tensorflow](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/Deep%20Reinforcement%20Learning%20(DRR)/Actor-Critic_Tensorflow.ipynb).
 For all the models you can check [here](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/Deep%20Reinforcement%20Learning%20(DRR)/model.py)
 
----
-![](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/Deep%20Reinforcement%20Learning%20(DRR)/assets/Diagram%20Critic.png)
----
+<p align="center">
+  <img src="https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/Deep%20Reinforcement%20Learning%20(DRR)/assets/Diagram%20Critic.png" alt="DRR Precisions">
+</p>
+
 
 # Training
 For the training, the main code is in `train.py` which is [Here](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/Deep%20Reinforcement%20Learning%20(DRR)/train.py)
@@ -174,15 +175,28 @@ The pseudocode for the detailed algorithm is shown in the image below. The algor
 * Sixth, in this process the critic and actor parameters will be minimized by critic loss and actor loss respectively.
 * Seventh, after all of those, both target networks will be updated by `soft_update()` method. 
 
----
-![](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/Deep%20Reinforcement%20Learning%20(DRR)/assets/Referensi_1_Algoritma.JPG)
----
+<p align="center">
+  <img src="https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/Deep%20Reinforcement%20Learning%20(DRR)/assets/Referensi_1_Algoritma.JPG" alt="DRR Precisions">
+</p>
 
 # Inference
 This section will describe on how to run the example simulated demo
 * First, download this repository
 * Second, run the command prompt shell and locate the current directory 
 * Third, to run the code, type the following command `python workflow.py`
+
+# Result
+This section shows the result in my implementation
+
+* **PMF Loss**
+<p align="center">
+  <img src="https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/Deep%20Reinforcement%20Learning%20(DRR)/assets/Loss_PMF_Oversampling.JPG" alt="PMF Loss">
+</p>
+
+* **DRR Precisions**
+<p align="center">
+  <img src="https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/Deep%20Reinforcement%20Learning%20(DRR)/assets/drr_eval.png" alt="DRR Precisions">
+</p>
 
 # Reference
 * [1] Liu, F., Tang, R., Li, X., Zhang, W., Ye, Y., Chen, H., ... & Zhang, Y. (2018). Deep reinforcement learning based recommendation with explicit user-item interactions modeling. arXiv preprint arXiv:1810.12027.
