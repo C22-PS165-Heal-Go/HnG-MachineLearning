@@ -169,7 +169,7 @@ The pseudocode for the detailed algorithm is shown in the image below. The algor
 * First, build all the needed modules, those are **state representation module, one actor module, one target actor module, one critic module, and one target critic modules**.
 * Secund, build two loops, one for iterating through the user data, and the other one is for the item coresponding to that user.
 * Third, in the first loop, you will need to collect some data such as user embeddings, items rated by user, and build a variable history of a previously liked items or just use `HistoryBuffer()`.
-* Fourth, in the second loop, you will calculate **a state, an action, a rewards, and the next state**. All of those result will be stored in `NaivePrioritizedReplayMemory()`, don't worry, it is just a **named tuple** data structure. I use that because it is easy to maintain and get the data.
+* Fourth, in the second loop, you will calculate **a state, an action, a rewards, and the next state**. All of those result will be stored in `NaivePrioritizedReplayMemory()`, don't worry, it is just a **named tuple** data structure. I use that because it is easy to maintain and retrieve the data.
 * Fifth, after **N many batches** of those result that have been stored, the `training_step()` method will be called.
 * Sixth, in this process the critic and actor parameters will be minimized by critic loss and actor loss respectively.
 * Seventh, after all of those, both target networks will be updated by `soft_update()` method. 
