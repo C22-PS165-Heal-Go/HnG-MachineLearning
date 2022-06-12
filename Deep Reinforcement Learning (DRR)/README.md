@@ -54,6 +54,16 @@ Basically the recommender user-item interaction can be described such as:
 In this section, I will present the models that is used in DRR frameworks
 
 ### Probabilistic Matrix Factorization(PMF) Module
+Probabilistic Matrix Factorization is a module that is used to model user and items interactions, based on this [[3]](https://proceedings.neurips.cc/paper/2007/file/d7322ed717dedf1eb4e6e52a37ea7bcd-Paper.pdf). This model then will be used as environment simulator meaning that in this frameworks it will be used to predict an item that has not been yet rated by the coresponding user.
+
+This model is composed of four embedding layers, two of them has 100-dimension, and the other two has 1-dimension each. This number is used based on the result in paper [[1]](https://arxiv.org/pdf/1810.12027.pdf).
+
+This model need to be trained on its own, because it will be our reward function later and act as an environment simulator.
+
+The detail for the PMF training, you can go [here](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/Deep%20Reinforcement%20Learning%20(DRR)/PMF_TensorFlow.ipynb)
+and if you want to dig deeper on how to create custom loop using TensorFlow framework you can go to [Writing a training loop from scratch](https://www.tensorflow.org/guide/keras/writing_a_training_loop_from_scratch). My code is based on that TensorFlow tutorial.
+
+For the dataset, you can use Movielens(100K) or Movielens(1M). Or you can choose the dataset that is already available in this repo. If you want to create your own dataset, you need to make sure the structure of the dataset is following the open publicly dataset such as movielens, jester, etc.
 
 ### State Representation Module
 
