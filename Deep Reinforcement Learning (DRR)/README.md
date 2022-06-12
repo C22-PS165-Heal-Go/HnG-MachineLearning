@@ -136,3 +136,7 @@ The pseudocode for the detailed algorithm is shown in the image below. The algor
 * Seventh, after all of those, both target networks will be updated by `soft_update()` method. 
 
 # Inference
+This section will describe on how to run the example simulated demo
+* First, download this repository
+* Second, run the command prompt shell and locate the current directory 
+* Third, to run the code, type the following command `python workflow.py`
