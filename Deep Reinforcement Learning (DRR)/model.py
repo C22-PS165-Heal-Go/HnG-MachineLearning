@@ -77,7 +77,7 @@ class DRRAveStateRepresentation(tf.keras.Model):
         ## self.attention_weights shape (n_items x 1)
         ## later this need to be reshaped
         self.attention_layer = AttentionLayer(5)
-        self.ave_pool = tf.keras.layers.AveragePooling1D(pool_size=2, )
+        self.ave_pool = tf.keras.layers.AveragePooling1D(pool_size=2,)
         
     def call(self, user, items):
         '''
@@ -97,27 +97,26 @@ class DRRAveStateRepresentation(tf.keras.Model):
         flow_user = tf.ones([100, ], tf.float32)
         flow_item = tf.ones([5, 100], tf.float32)
         self.call(flow_user, flow_item)
-        print("Weight Initiated")
 
 class Actor(tf.keras.Model):
     '''
     Actor network accounts for generatign action space based on
     the state space
-    in_features : the size of state representation got from DRRAve
+    units : the size of state representation got from DRRAve
     out_features : the size of action space
     '''
-    def __init__(self, in_features=100, out_features=18):
+    def __init__(self, units=100, out_features=18):
         super(Actor, self).__init__()
-        self.in_features = in_features
+        self.units = units
         self.out_features = out_features
         
-        self.linear_1 = tf.keras.layers.Dense(units=in_features,
+        self.linear_1 = tf.keras.layers.Dense(units=units,
                                               activation='relu',
                                               kernel_initializer=tf.keras.initializers.Orthogonal(seed=42),
                                               bias_initializer='zeros',
                                               kernel_regularizer=tf.keras.regularizers.L2(0.1))
         
-        self.linear_2 = tf.keras.layers.Dense(units=in_features,
+        self.linear_2 = tf.keras.layers.Dense(units=units,
                                               activation='relu',
                                               kernel_initializer=tf.keras.initializers.Orthogonal(seed=42),
                                               bias_initializer='zeros',
@@ -136,25 +135,24 @@ class Actor(tf.keras.Model):
         return tf.convert_to_tensor(output)
 
     def build_model(self):
-        flow_state = tf.ones([1, self.in_features], tf.float32)
+        flow_state = tf.ones([1, self.units], tf.float32)
         self.call(flow_state)
-        return "Weight Initialized"
 
 class Critic(tf.keras.Model):
     '''
     Critic networks are Deep-Q-Networks
     acton_size : is the size of action space from actor networks
-    in_features : is the size of state representation got from DRR-Ave
+    units : is the size of state representation got from DRR-Ave
     out_features : Q-Value
     '''
-    def __init__(self, action_size=20, in_features=128, out_features=18):
+    def __init__(self, action_size=20, units=128, out_features=18):
         super(Critic, self).__init__()
-        self.in_features = in_features
+        self.units = units
         self.out_features = out_features
-        self.combo_features = in_features + action_size
+        self.combo_features = units + action_size
         self.action_size = action_size
         ## check shape of the input
-        self.linear_1 = tf.keras.layers.Dense(self.in_features, 
+        self.linear_1 = tf.keras.layers.Dense(self.units, 
                                               activation='relu',
                                               kernel_initializer=tf.keras.initializers.Orthogonal(seed=42),
                                               bias_initializer='zeros',
@@ -186,7 +184,6 @@ class Critic(tf.keras.Model):
         return tf.convert_to_tensor(outputs)
     
     def build_model(self):
-        flow_state = tf.ones([1, self.in_features], tf.float32)
+        flow_state = tf.ones([1, self.units], tf.float32)
         flow_action = tf.ones([1, self.action_size], tf.float32)
         self.call(flow_state, flow_action)
-        return "Weight Initialized"
