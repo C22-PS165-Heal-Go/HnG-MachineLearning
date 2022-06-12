@@ -2,7 +2,8 @@ This is a [TensorFlow](https://www.tensorflow.org/) implementation to DRR (Deep 
 
 This project is built by referring to these papers [[1]](https://arxiv.org/pdf/1810.12027.pdf) and [[2]](https://aclanthology.org/P19-1064.pdf)
 
-Also, this project follows the algorithm from [This Repo](https://github.com/irskid5/drr_restaurants), which implemented in PyTorch Framework.
+Also, this project follows the algorithm from [This Repo](https://github.com/irskid5/drr_restaurants), which implementing DRR with
+restaurant dataset in PyTorch Framework.
 
 Questions, suggestions, or correctness can be posted as issues.
 
@@ -111,9 +112,27 @@ Critic module consists of four dense layers. Those are:
 * The second and third layers will have the unit size of the combination of first layer output and action size
 * The fourth layer will have a unit size of one, that is the result or q-value.
 
-Actor module first created is in [Actor_Critic_Tensorflow](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/Deep%20Reinforcement%20Learning%20(DRR)/Actor-Critic_Tensorflow.ipynb).
+Critic module first created is in [Actor_Critic_Tensorflow](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/Deep%20Reinforcement%20Learning%20(DRR)/Actor-Critic_Tensorflow.ipynb).
 For all the models you can check [here](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/Deep%20Reinforcement%20Learning%20(DRR)/model.py)
 
 # Training
+For the training, the main code is in `train.py` which is [Here](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/Deep%20Reinforcement%20Learning%20(DRR)/train.py)
+to be precise it's in the `learn()` method. 
+
+The whole algorithm is following the training procedure described in [[1]](https://arxiv.org/pdf/1810.12027.pdf) and the algorithm from [This Repo](https://github.com/irskid5/drr_restaurants).
+
+There are a lot of differences in implementation between PyTorch framework and TensorFlow framework, but I try my best to make the algorithm as
+close as possible in order to get very similar result. For the training can be seen in [DRR-Train](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/Deep%20Reinforcement%20Learning%20(DRR)/DRR-Train.ipynb) (sometimes there is an error viewing this file through github, because
+there are too many training logs), and the implemented training is in `train.py` [here](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/Deep%20Reinforcement%20Learning%20(DRR)/train.py). I still follow the aforementioned referenced repo by building the training
+in object oriented paradigm so that it can be easily managed and easily called.
+
+The pseudocode for the detailed algorithm is shown in the image below. The algorithm basically can be explained such as:
+* First, build all the needed modules, those are **state representation module, one actor module, one target actor module, one critic module, and one target critic modules**.
+* Secund, build two loops, one for iterating through the user data, and the other one is for the item coresponding to that user.
+* Third, in the first loop, you will need to collect some data such as user embeddings, items rated by user, and build a variable history of a previously liked items or just use `HistoryBuffer()`.
+* Fourth, in the second loop, you will calculate **a state, an action, a rewards, and the next state**. All of those result will be stored in `NaivePrioritizedReplayMemory()`, don't worry, it is just a **named tuple** data structure. I use that because it is easy to maintain and get the data.
+* Fifth, after **N many batches** of those result that have been stored, the `training_step()` method will be called.
+* Sixth, in this process the critic and actor parameters will be minimized by critic loss and actor loss respectively.
+* Seventh, after all of those, both target networks will be updated by `soft_update()` method. 
 
 # Inference
