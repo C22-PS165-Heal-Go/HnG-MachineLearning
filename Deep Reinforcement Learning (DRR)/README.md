@@ -24,7 +24,7 @@ I'm using `Tensorflow 2.7.0` in `Python 3.9`.
 
 [***Reference***](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/tree/main/Deep%20Reinforcement%20Learning%20(DRR)#reference)
 
-[***TensorFlow Tutorial***](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/tree/main/Deep%20Reinforcement%20Learning%20(DRR)#tensorflow tutorial)
+[***TensorFlowTutorial***](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/tree/main/Deep%20Reinforcement%20Learning%20(DRR)#tensorflowtutorial)
 
 # Objectives
 **To build a models for a system that can interact with the user and consider both dynamic adaptation and long-term rewards**
