@@ -1,7 +1,10 @@
 # Heal&Go App Machine Learning 💻
 
-This repository contains the Machine Learning part of the Heal&Go App
-<br>
+This repository contains the Machine Learning part of the Heal&Go App.
+
+For details of each model can be seen in this section :
+- [Deep Learning](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/tree/main/deep%20learning#deep-learning)
+- [Deep Reinforcement Learning]()
 <br>
 
 ## Machine Learning Team 🧍‍♂️🧍‍♀️
