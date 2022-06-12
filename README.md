@@ -4,7 +4,7 @@ This repository contains the Machine Learning part of the Heal&Go App.
 
 For details of each model can be seen in this section :
 - [Deep Learning](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/tree/main/deep%20learning#deep-learning)
-- [Deep Reinforcement Learning]()
+- [Deep Reinforcement Learning](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/tree/main/Deep%20Reinforcement%20Learning%20(DRR)#readme)
 <br>
 
 ## Machine Learning Team 🧍‍♂️🧍‍♀️
@@ -23,6 +23,10 @@ We use the Deep Learning model to create a tourist destination recommendation sy
 
 - Deep Learning : [Code](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/deep%20learning/dl_model.ipynb), [Model](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/tree/main/deep%20learning/model)\
 📝 Note : **The highest train accuracy of this model has reached 93% and the lowest loss has reached 12%**
+<p align="center">
+  <img src="https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/deep%20learning/assets/acc.PNG" alt="Acc">
+  <img src="https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/deep%20learning/assets/loss.PNG" alt="Loss">
+</p>
 
 - Deep Reinforcement : [Code PMF](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/Deep%20Reinforcement%20Learning%20(DRR)/PMF_TensorFlow.ipynb), [Code DRR-Ave](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/Deep%20Reinforcement%20Learning%20(DRR)/DRR_Ave_Models_Tensorflow.ipynb), [Code Actor-Critic](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/Deep%20Reinforcement%20Learning%20(DRR)/Actor_Network_Tensorflow.ipynb), [Model](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/Deep%20Reinforcement%20Learning%20(DRR)/model.py), [Demo](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/Deep%20Reinforcement%20Learning%20(DRR)/WorkFlow.py)\
 📝 Note : **The DRR offline evaluation**
@@ -30,10 +34,9 @@ We use the Deep Learning model to create a tourist destination recommendation sy
   - Precision@10: 0.7225
   - Precision@15: 0.7835
   - Precision@20: 0.8622
-
----
-![](https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/img/drr_eval.png)
----
+<p align="center">
+  <img src="https://github.com/C22-PS165-Heal-Go/HnG-MachineLearning/blob/main/img/drr_eval.png" alt="Acc2">
+</p>
 
 <br>
 
